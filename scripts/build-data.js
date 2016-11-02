@@ -65,6 +65,12 @@ const getLowestImplementedVersion = ({ features }, env) => {
 
   let envTests = tests
   .map(({ res: test, name }, i) => {
+    // Babel itself doesn't implement the feature correctly,
+    // don't count against it
+    if (!test.babel) {
+      // console.log(name);
+      return '-1';  
+    }
     return Object.keys(test)
     .filter((t) => t.startsWith(env))
     // TODO: make flagged/etc an options

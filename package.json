@@ -8,14 +8,14 @@
   "repository": "https://github.com/babel/babel-preset-env",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src -d lib",
+    "build": "BABEL_ENV=production babel src -d lib",
+    "build-ci": "babel src -d lib",
     "build-data": "babel-node ./scripts/build-data.js",
     "dev": "babel -w src -d lib",
     "lint": "eslint scripts src test",
     "fix": "eslint scripts src test --fix",
-    "ci": "npm run test",
-    "changelog": "git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s (%an)' | grep -v 'Merge pull request'",
-    "test": "npm run build && mocha ./test --compilers js:babel-register -t 5000"
+    "test": "mocha ./test --require ./scripts/register -t 5000",
+    "changelog": "git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s (%an)' | grep -v 'Merge pull request'"
   },
   "dependencies": {
     "babel-plugin-check-es2015-constants": "^6.3.13",
@@ -52,7 +52,6 @@
     "babel-eslint": "^6.1.2",
     "babel-helper-plugin-test-runner": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.8.0",
-    "babel-preset-es2015": "^6.14.0",
     "babel-register": "^6.14.0",
     "compat-table": "github:kangax/compat-table#gh-pages",
     "eslint": "^3.3.1",
@@ -65,12 +64,31 @@
   "babel": {
     "presets": [
       [
-        "es2015",
+        "./lib",
         {
+          "targets": {
+            "node": "--version"
+          },
           "loose": true
         }
       ]
     ],
+    "env": {
+      "production": {
+        "presets": [
+          [
+            "./lib",
+            {
+              "targets": {
+                "node": "0.10"
+              },
+              "loose": true,
+              "debug": true
+            }
+          ]
+        ]
+      }
+    },
     "plugins": [
       "transform-flow-strip-types"
     ]
